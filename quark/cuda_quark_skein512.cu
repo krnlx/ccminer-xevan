@@ -60,22 +60,22 @@ __constant__ const uint2 buffer[152] = {
 }
 
 #define macro3() { \
-	hash64[0]+= hash64[1]; hash64[2]+= hash64[3]; hash64[4]+= hash64[5]; hash64[6]+= hash64[7]; \
+	hash64[0] += hash64[1]; hash64[2] += hash64[3]; hash64[4] += hash64[5]; hash64[6] += hash64[7]; \
 	hash64[1] = ROL2(hash64[1], 39) ^ hash64[0]; \
 	hash64[3] = ROL2(hash64[3], 30) ^ hash64[2]; \
 	hash64[5] = ROL2(hash64[5], 34) ^ hash64[4]; \
 	hash64[7] = ROL24(hash64[7]) ^ hash64[6]; \
-	hash64[2]+= hash64[1]; hash64[4]+= hash64[7]; hash64[6]+= hash64[5]; hash64[0]+= hash64[3]; \
+	hash64[2] += hash64[1]; hash64[4] += hash64[7]; hash64[6] += hash64[5]; hash64[0] += hash64[3]; \
 	hash64[1] = ROL2(hash64[1], 13) ^ hash64[2]; \
 	hash64[7] = ROL2(hash64[7], 50) ^ hash64[4]; \
 	hash64[5] = ROL2(hash64[5], 10) ^ hash64[6]; \
 	hash64[3] = ROL2(hash64[3], 17) ^ hash64[0]; \
-	hash64[4]+= hash64[1]; hash64[6]+= hash64[3]; hash64[0]+= hash64[5]; hash64[2]+= hash64[7]; \
+	hash64[4] += hash64[1]; hash64[6] += hash64[3]; hash64[0] += hash64[5]; hash64[2] += hash64[7]; \
 	hash64[1] = ROL2(hash64[1], 25) ^ hash64[4]; \
 	hash64[3] = ROL2(hash64[3], 29) ^ hash64[6]; \
 	hash64[5] = ROL2(hash64[5], 39) ^ hash64[0]; \
 	hash64[7] = ROL2(hash64[7], 43) ^ hash64[2]; \
-	hash64[6]+= hash64[1]; hash64[0]+= hash64[7]; hash64[2]+= hash64[5]; hash64[4]+= hash64[3]; \
+	hash64[6] += hash64[1]; hash64[0] += hash64[7]; hash64[2] += hash64[5]; hash64[4] += hash64[3]; \
 	hash64[1] = ROL8(hash64[1]) ^ hash64[6]; \
 	hash64[7] = ROL2(hash64[7], 35) ^ hash64[0]; \
 	hash64[5] = ROR8(hash64[5]) ^ hash64[2]; \
@@ -83,22 +83,22 @@ __constant__ const uint2 buffer[152] = {
 }
 
 #define macro4() {\
-	hash64[0]+= hash64[1]; hash64[2]+= hash64[3]; hash64[4]+= hash64[5]; hash64[6]+= hash64[7]; \
+	hash64[0] += hash64[1]; hash64[2] += hash64[3]; hash64[4] += hash64[5]; hash64[6] += hash64[7]; \
 	hash64[1] = ROL2(hash64[1], 46) ^ hash64[0]; \
 	hash64[3] = ROL2(hash64[3], 36) ^ hash64[2]; \
 	hash64[5] = ROL2(hash64[5], 19) ^ hash64[4]; \
 	hash64[7] = ROL2(hash64[7], 37) ^ hash64[6]; \
-	hash64[2]+= hash64[1]; hash64[4]+= hash64[7]; hash64[6]+= hash64[5]; hash64[0]+= hash64[3]; \
+	hash64[2] += hash64[1]; hash64[4] += hash64[7]; hash64[6] += hash64[5]; hash64[0] += hash64[3]; \
 	hash64[1] = ROL2(hash64[1], 33) ^ hash64[2]; \
 	hash64[7] = ROL2(hash64[7], 27) ^ hash64[4]; \
 	hash64[5] = ROL2(hash64[5], 14) ^ hash64[6]; \
 	hash64[3] = ROL2(hash64[3], 42) ^ hash64[0]; \
-	hash64[4]+= hash64[1]; hash64[6]+= hash64[3]; hash64[0]+= hash64[5]; hash64[2]+= hash64[7]; \
+	hash64[4] += hash64[1]; hash64[6] += hash64[3]; hash64[0] += hash64[5]; hash64[2] += hash64[7]; \
 	hash64[1] = ROL2(hash64[1], 17) ^ hash64[4]; \
 	hash64[3] = ROL2(hash64[3], 49) ^ hash64[6]; \
 	hash64[5] = ROL2(hash64[5], 36) ^ hash64[0]; \
 	hash64[7] = ROL2(hash64[7], 39) ^ hash64[2]; \
-	hash64[6]+= hash64[1]; hash64[0]+= hash64[7]; hash64[2]+= hash64[5]; hash64[4]+= hash64[3]; \
+	hash64[6] += hash64[1]; hash64[0] += hash64[7]; hash64[2] += hash64[5]; hash64[4] += hash64[3]; \
 	hash64[1] = ROL2(hash64[1], 44) ^ hash64[6]; \
 	hash64[7] = ROL2(hash64[7], 9) ^ hash64[0]; \
 	hash64[5] = ROL2(hash64[5], 54) ^ hash64[2]; \
@@ -121,7 +121,7 @@ const uint32_t thread = (blockDim.x * blockIdx.x + threadIdx.x);
 
 		const uint32_t hashPosition = (g_nonceVector == NULL) ? thread : g_nonceVector[thread];
 
-		uint64_t *Hash = &g_hash[hashPosition<<3];
+		uint64_t *Hash = &g_hash[hashPosition << 3];
 
 		uint2x4 *phash = (uint2x4*)Hash;
 		*(uint2x4*)&m[0] = __ldg4(&phash[0]);
@@ -132,16 +132,17 @@ const uint32_t thread = (blockDim.x * blockIdx.x + threadIdx.x);
 		h[4] = p[4];	h[5] = p[5];	h[6] = p[6];	h[7] = p[7];
 */
 #pragma unroll 8
-		for(int i=0;i<8;i++)p[i]=m[i];
+		for(int i = 0; i < 8; i++)
+			p[i] = m[i];
 		
-		h[0]=vectorize(0x4903ADFF749C51CEUL);
-                h[1]=vectorize(0x0D95DE399746DF03UL);
-                h[2]=vectorize(0x8FD1934127C79BCEUL);
-                h[3]=vectorize(0x9A255629FF352CB1UL);
-                h[4]=vectorize(0x5DB62599DF6CA7B0UL);
-                h[5]=vectorize(0xEABE394CA9D5C3F4UL);
-                h[6]=vectorize(0x991112C71A75B523UL);
-                h[7]=vectorize(0xAE18A40B660FCC33UL);
+		h[0] = vectorize((uint64_t)0x4903ADFF749C51CE);
+		h[1] = vectorize((uint64_t)0x0D95DE399746DF03);
+		h[2] = vectorize((uint64_t)0x8FD1934127C79BCE);
+		h[3] = vectorize((uint64_t)0x9A255629FF352CB1);
+		h[4] = vectorize((uint64_t)0x5DB62599DF6CA7B0);
+		h[5] = vectorize((uint64_t)0xEABE394CA9D5C3F4);
+		h[6] = vectorize((uint64_t)0x991112C71A75B523);
+		h[7] = vectorize((uint64_t)0xAE18A40B660FCC33);
 
 
 
@@ -149,8 +150,8 @@ const uint32_t thread = (blockDim.x * blockIdx.x + threadIdx.x);
 		h[8] = h[0] ^ h[1] ^ h[2] ^ h[3] ^ h[4] ^ h[5] ^ h[6] ^ h[7] ^ vectorize(0x1BD11BDAA9FC1A22);
 
 		uint2 t0,t1,t2;
-		t0 =vectorize((1UL << 6) + 0UL);
-		t1 = vectorize((1UL >> 58) + (224UL << 55));
+		t0 = vectorize(((uint64_t)1 << 6) + (uint64_t)0);
+		t1 = vectorize(((uint64_t)1 >> 58) + ((uint64_t)224 << 55));
 		t2 = t1 ^ t0;
 
 #define h0  h[0]
@@ -185,25 +186,26 @@ const uint32_t thread = (blockDim.x * blockIdx.x + threadIdx.x);
                 TFBIG_ADDKEY_UI2(p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], h, t, 18);
 
 
-                h[0]= m[0] ^ p[0];
-                h[1]= m[1] ^ p[1];
-                h[2]= m[2] ^ p[2];
-                h[3]= m[3] ^ p[3];
-                h[4]= m[4] ^ p[4];
-                h[5]= m[5] ^ p[5];
-                h[6]= m[6] ^ p[6];
-                h[7]= m[7] ^ p[7];
+                h[0] = m[0] ^ p[0];
+                h[1] = m[1] ^ p[1];
+                h[2] = m[2] ^ p[2];
+                h[3] = m[3] ^ p[3];
+                h[4] = m[4] ^ p[4];
+                h[5] = m[5] ^ p[5];
+                h[6] = m[6] ^ p[6];
+                h[7] = m[7] ^ p[7];
 
 #pragma unroll 8
 
-                for(int i=0;i<8;i++)p[i]=vectorize(0UL);
+                for(int i = 0; i < 8; i++)
+					p[i] = vectorize((uint64_t)0);
 
 //352,64
 
                 h[8] = h[0] ^ h[1] ^ h[2] ^ h[3] ^ h[4] ^ h[5] ^ h[6] ^ h[7] ^ vectorize(0x1BD11BDAA9FC1A22);
 
-		 t0 =vectorize((1UL << 6) + 64UL);
-                t1 = vectorize((1UL >> 58) + (352UL << 55));
+		        t0 = vectorize(((uint64_t)1 << 6) + (uint64_t)64);
+				t1 = vectorize(((uint64_t)1 >> 58) + ((uint64_t)352 << 55));
                 t2 = t1 ^ t0;
 
                 TFBIG_4e_UI2(0);
@@ -227,16 +229,18 @@ const uint32_t thread = (blockDim.x * blockIdx.x + threadIdx.x);
                 TFBIG_ADDKEY_UI2(p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], h, t, 18);
 #pragma unroll 8
 
-for(int i=0;i<8;i++)h[i]=p[i];
+for(int i = 0; i < 8; i++)
+	h[i] = p[i];
 ///510,8
 #pragma unroll 8
 
-for(int i=0;i<8;i++)p[i]=vectorize(0UL);
+for(int i = 0; i < 8; i++)
+	p[i] = vectorize((uint64_t)0);
 
                 h[8] = h[0] ^ h[1] ^ h[2] ^ h[3] ^ h[4] ^ h[5] ^ h[6] ^ h[7] ^ vectorize(0x1BD11BDAA9FC1A22);
 
-                 t0 =vectorize((0UL << 6) + 8UL);
-                t1 = vectorize((0UL >> 58) + (510UL << 55));
+				t0 = vectorize(((uint64_t)0 << 6) + (uint64_t)8);
+				t1 = vectorize(((uint64_t)0 >> 58) + ((uint64_t)510 << 55));
                 t2 = t1 ^ t0;
 
                 TFBIG_4e_UI2(0);
@@ -273,10 +277,11 @@ void quark_skein512_cpu_hash_64(int thr_id,uint32_t threads, uint32_t *d_nonceVe
 	uint32_t tpb = TPB52;
 	int dev_id = device_map[thr_id];
 	
-	if (device_sm[dev_id] <= 500) tpb = TPB50;
-	const dim3 grid((threads + tpb-1)/tpb);
+	if (device_sm[dev_id] <= 500) 
+		tpb = TPB50;
+	const dim3 grid((threads + tpb - 1) / tpb);
 	const dim3 block(tpb);
-	quark_skein512_gpu_hash_64 << <grid, block >> >(threads, (uint64_t*)d_hash, d_nonceVector);
+	quark_skein512_gpu_hash_64 <<<grid, block>>>(threads, (uint64_t*)d_hash, d_nonceVector);
 
 }
 
@@ -303,27 +308,27 @@ void skein512_gpu_hash_80(uint32_t threads, uint32_t startNounce, uint64_t *outp
 		uint2 p[8];
 		p[1] = nonce2;
 
-		h[0] = c_buffer[ 1];
-		h[1] = c_buffer[ 2];
-		h[2] = c_buffer[ 3];
-		h[3] = c_buffer[ 4];
-		h[4] = c_buffer[ 5];
-		h[5] = c_buffer[ 6];
-		h[6] = c_buffer[ 7];
-		h[7] = c_buffer[ 8];
-		h[8] = c_buffer[ 9];
+		h[0] = c_buffer[1];
+		h[1] = c_buffer[2];
+		h[2] = c_buffer[3];
+		h[3] = c_buffer[4];
+		h[4] = c_buffer[5];
+		h[5] = c_buffer[6];
+		h[6] = c_buffer[7];
+		h[7] = c_buffer[8];
+		h[8] = c_buffer[9];
 
 		t0 = vectorize(0x50ull);
 		t1 = vectorize(0xB000000000000000ull);
-		t2 = t0^t1;
+		t2 = t0 ^ t1;
 		
-		p[ 1]=nonce2 + h[1];	p[ 0]= c_buffer[10] + p[ 1];
-		p[ 2]=c_buffer[11];
-		p[ 3]=c_buffer[12];
-		p[ 4]=c_buffer[13];
-		p[ 5]=c_buffer[14];
-		p[ 6]=c_buffer[15];
-		p[ 7]=c_buffer[16];
+		p[1] = nonce2 + h[1];	p[0] = c_buffer[10] + p[1];
+		p[2] = c_buffer[11];
+		p[3] = c_buffer[12];
+		p[4] = c_buffer[13];
+		p[5] = c_buffer[14];
+		p[6] = c_buffer[15];
+		p[7] = c_buffer[16];
 		
 //		TFBIGMIX8e();
 		p[1] = ROL2(p[1], 46) ^ p[0];
@@ -348,60 +353,60 @@ void skein512_gpu_hash_80(uint32_t threads, uint32_t startNounce, uint64_t *outp
 		p[5] = ROL2(p[5], 54) ^ p[2];
 		p[3] = ROR8(p[3]) ^ p[4];
 				
-		p[ 0]+=h[1];	p[ 1]+=h[2];	p[ 2]+=h[3];	p[ 3]+=h[4];	p[ 4]+=h[5];	p[ 5]+=c_buffer[20];	p[ 7]+=c_buffer[21];	p[ 6]+=c_buffer[22];
+		p[0] += h[1];	p[1] += h[2];	p[2] += h[3];	p[3] += h[4];	p[4] += h[5];	p[5] += c_buffer[20];	p[7] += c_buffer[21];	p[6] += c_buffer[22];
 		TFBIGMIX8o();
-		p[ 0]+=h[2];	p[ 1]+=h[3];	p[ 2]+=h[4];	p[ 3]+=h[5];	p[ 4]+=h[6];	p[ 5]+=c_buffer[22];	p[ 7]+=c_buffer[23];	p[ 6]+=c_buffer[24];
+		p[0] += h[2];	p[1] += h[3];	p[2] += h[4];	p[3] += h[5];	p[4] += h[6];	p[5] += c_buffer[22];	p[7] += c_buffer[23];	p[6] += c_buffer[24];
 		TFBIGMIX8e();
-		p[ 0]+=h[3];	p[ 1]+=h[4];	p[ 2]+=h[5];	p[ 3]+=h[6];	p[ 4]+=h[7];	p[ 5]+=c_buffer[24];	p[ 7]+=c_buffer[25];	p[ 6]+=c_buffer[26];
+		p[0] += h[3];	p[1] += h[4];	p[2] += h[5];	p[3] += h[6];	p[4] += h[7];	p[5] += c_buffer[24];	p[7] += c_buffer[25];	p[6] += c_buffer[26];
 		TFBIGMIX8o();
-		p[ 0]+=h[4];	p[ 1]+=h[5];	p[ 2]+=h[6];	p[ 3]+=h[7];	p[ 4]+=h[8];	p[ 5]+=c_buffer[26];	p[ 7]+=c_buffer[27];	p[ 6]+=c_buffer[28];
+		p[0] += h[4];	p[1] += h[5];	p[2] += h[6];	p[3] += h[7];	p[4] += h[8];	p[5] += c_buffer[26];	p[7] += c_buffer[27];	p[6] += c_buffer[28];
 		TFBIGMIX8e();
-		p[ 0]+=h[5];	p[ 1]+=h[6];	p[ 2]+=h[7];	p[ 3]+=h[8];	p[ 4]+=h[0];	p[ 5]+=c_buffer[28];	p[ 7]+=c_buffer[29];	p[ 6]+=c_buffer[30];
+		p[0] += h[5];	p[1] += h[6];	p[2] += h[7];	p[3] += h[8];	p[4] += h[0];	p[5] += c_buffer[28];	p[7] += c_buffer[29];	p[6] += c_buffer[30];
 		TFBIGMIX8o();
-		p[ 0]+=h[6];	p[ 1]+=h[7];	p[ 2]+=h[8];	p[ 3]+=h[0];	p[ 4]+=h[1];	p[ 5]+=c_buffer[30];	p[ 7]+=c_buffer[31];	p[ 6]+=c_buffer[32];
+		p[0] += h[6];	p[1] += h[7];	p[2] += h[8];	p[3] += h[0];	p[4] += h[1];	p[5] += c_buffer[30];	p[7] += c_buffer[31];	p[6] += c_buffer[32];
 		TFBIGMIX8e();
-		p[ 0]+=h[7];	p[ 1]+=h[8];	p[ 2]+=h[0];	p[ 3]+=h[1];	p[ 4]+=h[2];	p[ 5]+=c_buffer[32];	p[ 7]+=c_buffer[33];	p[ 6]+=c_buffer[34];
+		p[0] += h[7];	p[1] += h[8];	p[2] += h[0];	p[3] += h[1];	p[4] += h[2];	p[5] += c_buffer[32];	p[7] += c_buffer[33];	p[6] += c_buffer[34];
 		TFBIGMIX8o();
-		p[ 0]+=h[8];	p[ 1]+=h[0];	p[ 2]+=h[1];	p[ 3]+=h[2];	p[ 4]+=h[3];	p[ 5]+=c_buffer[34];	p[ 7]+=c_buffer[35];	p[ 6]+=c_buffer[36];
+		p[0] += h[8];	p[1] += h[0];	p[2] += h[1];	p[3] += h[2];	p[4] += h[3];	p[5] += c_buffer[34];	p[7] += c_buffer[35];	p[6] += c_buffer[36];
 		TFBIGMIX8e();
-		p[ 0]+=h[0];	p[ 1]+=h[1];	p[ 2]+=h[2];	p[ 3]+=h[3];	p[ 4]+=h[4];	p[ 5]+=c_buffer[36];	p[ 7]+=c_buffer[37];	p[ 6]+=c_buffer[38];
+		p[0] += h[0];	p[1] += h[1];	p[2] += h[2];	p[3] += h[3];	p[4] += h[4];	p[5] += c_buffer[36];	p[7] += c_buffer[37];	p[6] += c_buffer[38];
 		TFBIGMIX8o();
-		p[ 0]+=h[1];	p[ 1]+=h[2];	p[ 2]+=h[3];	p[ 3]+=h[4];	p[ 4]+=h[5];	p[ 5]+=c_buffer[38];	p[ 7]+=c_buffer[39];	p[ 6]+=c_buffer[40];
+		p[0] += h[1];	p[1] += h[2];	p[2] += h[3];	p[3] += h[4];	p[4] += h[5];	p[5] += c_buffer[38];	p[7] += c_buffer[39];	p[6] += c_buffer[40];
 		TFBIGMIX8e();
-		p[ 0]+=h[2];	p[ 1]+=h[3];	p[ 2]+=h[4];	p[ 3]+=h[5];	p[ 4]+=h[6];	p[ 5]+=c_buffer[40];	p[ 7]+=c_buffer[41];	p[ 6]+=c_buffer[42];
+		p[0] += h[2];	p[1] += h[3];	p[2] += h[4];	p[3] += h[5];	p[4] += h[6];	p[5] += c_buffer[40];	p[7] += c_buffer[41];	p[6] += c_buffer[42];
 		TFBIGMIX8o();
-		p[ 0]+=h[3];	p[ 1]+=h[4];	p[ 2]+=h[5];	p[ 3]+=h[6];	p[ 4]+=h[7];	p[ 5]+=c_buffer[42];	p[ 7]+=c_buffer[43];	p[ 6]+=c_buffer[44];
+		p[0] += h[3];	p[1] += h[4];	p[2] += h[5];	p[3] += h[6];	p[4] += h[7];	p[5] += c_buffer[42];	p[7] += c_buffer[43];	p[6] += c_buffer[44];
 		TFBIGMIX8e();
-		p[ 0]+=h[4];	p[ 1]+=h[5];	p[ 2]+=h[6];	p[ 3]+=h[7];	p[ 4]+=h[8];	p[ 5]+=c_buffer[44];	p[ 7]+=c_buffer[45];	p[ 6]+=c_buffer[46];
+		p[0] += h[4];	p[1] += h[5];	p[2] += h[6];	p[3] += h[7];	p[4] += h[8];	p[5] += c_buffer[44];	p[7] += c_buffer[45];	p[6] += c_buffer[46];
 		TFBIGMIX8o();
-		p[ 0]+=h[5];	p[ 1]+=h[6];	p[ 2]+=h[7];	p[ 3]+=h[8];	p[ 4]+=h[0];	p[ 5]+=c_buffer[46];	p[ 7]+=c_buffer[47];	p[ 6]+=c_buffer[48];
+		p[0] += h[5];	p[1] += h[6];	p[2] += h[7];	p[3] += h[8];	p[4] += h[0];	p[5] += c_buffer[46];	p[7] += c_buffer[47];	p[6] += c_buffer[48];
 		TFBIGMIX8e();
-		p[ 0]+=h[6];	p[ 1]+=h[7];	p[ 2]+=h[8];	p[ 3]+=h[0];	p[ 4]+=h[1];	p[ 5]+=c_buffer[48];	p[ 7]+=c_buffer[49];	p[ 6]+=c_buffer[50];
+		p[0] += h[6];	p[1] += h[7];	p[2] += h[8];	p[3] += h[0];	p[4] += h[1];	p[5] += c_buffer[48];	p[7] += c_buffer[49];	p[6] += c_buffer[50];
 		TFBIGMIX8o();
-		p[ 0]+=h[7];	p[ 1]+=h[8];	p[ 2]+=h[0];	p[ 3]+=h[1];	p[ 4]+=h[2];	p[ 5]+=c_buffer[50];	p[ 7]+=c_buffer[51];	p[ 6]+=c_buffer[52];
+		p[0] += h[7];	p[1] += h[8];	p[2] += h[0];	p[3] += h[1];	p[4] += h[2];	p[5] += c_buffer[50];	p[7] += c_buffer[51];	p[6] += c_buffer[52];
 		TFBIGMIX8e();
-		p[ 0]+=h[8];	p[ 1]+=h[0];	p[ 2]+=h[1];	p[ 3]+=h[2];	p[ 4]+=h[3];	p[ 5]+=c_buffer[52];	p[ 7]+=c_buffer[53];	p[ 6]+=c_buffer[54];
+		p[0] += h[8];	p[1] += h[0];	p[2] += h[1];	p[3] += h[2];	p[4] += h[3];	p[5] += c_buffer[52];	p[7] += c_buffer[53];	p[6] += c_buffer[54];
 		TFBIGMIX8o();
-		p[ 0]+=h[0];	p[ 1]+=h[1];	p[ 2]+=h[2];	p[ 3]+=h[3];	p[ 4]+=h[4];	p[ 5]+=c_buffer[54];	p[ 7]+=c_buffer[55];	p[ 6]+=c_buffer[56];
+		p[0] += h[0];	p[1] += h[1];	p[2] += h[2];	p[3] += h[3];	p[4] += h[4];	p[5] += c_buffer[54];	p[7] += c_buffer[55];	p[6] += c_buffer[56];
 		
-		p[0]^= c_buffer[57];
-		p[1]^= nonce2;
+		p[0] ^= c_buffer[57];
+		p[1] ^= nonce2;
 
 		t0 = vectorize(8); // extra
 		t1 = vectorize(0xFF00000000000000ull); // etype
-		t2 = t0^t1;
+		t2 = t0 ^ t1;
 
-		h[0] = p[ 0];
-		h[1] = p[ 1];
-		h[2] = p[ 2];
-		h[3] = p[ 3];
-		h[4] = p[ 4];
-		h[5] = p[ 5];
-		h[6] = p[ 6];
-		h[7] = p[ 7];
+		h[0] = p[0];
+		h[1] = p[1];
+		h[2] = p[2];
+		h[3] = p[3];
+		h[4] = p[4];
+		h[5] = p[5];
+		h[6] = p[6];
+		h[7] = p[7];
 
 		h[8] = h[0] ^ h[1] ^ h[2] ^ h[3] ^ h[4] ^ h[5] ^ h[6] ^ h[7] ^ vectorize(0x1BD11BDAA9FC1A22);
-		p[ 0] = p[ 1] = p[ 2] = p[ 3] = p[ 4] =p[ 5] =p[ 6] = p[ 7] = vectorize(0);
+		p[0] = p[1] = p[2] = p[3] = p[4] = p[5] = p[6] = p[7] = vectorize(0);
 
 		#define h0 h[0]
 		#define h1 h[1]
@@ -460,7 +465,7 @@ void skein512_cpu_setBlock_80(void *pdata)
 	h[6] = 0x991112C71A75B523ull;
 	h[7] = 0xAE18A40B660FCC33ull;
 	// h[8] = h[0] ^ h[1] ^ h[2] ^ h[3] ^ h[4] ^ h[5] ^ h[6] ^ h[7] ^ SPH_C64(0x1BD11BDAA9FC1A22);
-	h[8] = 0xcab2076d98173ec4ULL;
+	h[8] = 0xcab2076d98173ec4ulL;
 
 	t0 = 64; // ptr
 	t1 = 0x7000000000000000ull;
@@ -501,24 +506,24 @@ void skein512_cpu_setBlock_80(void *pdata)
 	
 	uint64_t buffer[128];
 	
-//	buffer[ 0] = message[ 8];
-	buffer[ 0] = message[ 9];
-	h[0] = buffer[ 1] = message[10];
-	h[1] = buffer[ 2] = message[11];
-	h[2] = buffer[ 3] = message[12];
-	h[3] = buffer[ 4] = message[13];
-	h[4] = buffer[ 5] = message[14];
-	h[5] = buffer[ 6] = message[15];
-	h[6] = buffer[ 7] = message[16];
-	h[7] = buffer[ 8] = message[17];
-	h[8] = buffer[ 9] = h[0]^h[1]^h[2]^h[3]^h[4]^h[5]^h[6]^h[7]^0x1BD11BDAA9FC1A22ULL;
+//	buffer[0] = message[8];
+	buffer[0] = message[9];
+	h[0] = buffer[1] = message[10];
+	h[1] = buffer[2] = message[11];
+	h[2] = buffer[3] = message[12];
+	h[3] = buffer[4] = message[13];
+	h[4] = buffer[5] = message[14];
+	h[5] = buffer[6] = message[15];
+	h[6] = buffer[7] = message[16];
+	h[7] = buffer[8] = message[17];
+	h[8] = buffer[9] = h[0]^h[1]^h[2]^h[3]^h[4]^h[5]^h[6]^h[7]^0x1BD11BDAA9FC1A22ulL;
 	
 	t0 = 0x50ull;
 	t1 = 0xB000000000000000ull;
 	t2 = t0^t1;
 	
-	p[ 0] = message[ 8] + h[0];	p[ 2] = h[2];		p[ 3] = h[3];	p[ 4] = h[4];
-	p[ 5] = h[5] + t0;		p[ 6] = h[6] + t1;	p[ 7] = h[7];
+	p[0] = message[8] + h[0];	p[2] = h[2];		p[3] = h[3];	p[4] = h[4];
+	p[5] = h[5] + t0;		p[6] = h[6] + t1;	p[7] = h[7];
 
 	p[2] += p[3];	p[4] += p[5];	p[6] += p[7];
 
@@ -529,56 +534,56 @@ void skein512_cpu_setBlock_80(void *pdata)
 	p[7] = ROTL64(p[7], 27) ^ p[4];
 	p[5] = ROTL64(p[5], 14) ^ p[6];
 
-	buffer[10] = p[ 0];
-	buffer[11] = p[ 2];
-	buffer[12] = p[ 3];
-	buffer[13] = p[ 4];
-	buffer[14] = p[ 5];
-	buffer[15] = p[ 6];
-	buffer[16] = p[ 7];
+	buffer[10] = p[0];
+	buffer[11] = p[2];
+	buffer[12] = p[3];
+	buffer[13] = p[4];
+	buffer[14] = p[5];
+	buffer[15] = p[6];
+	buffer[16] = p[7];
 	buffer[17] = ROTL64(p[3], 42);
 	buffer[18] = ROTL64(p[5], 36);
 	buffer[19] = ROTL64(p[7], 39);
 	
-	buffer[20]=h[6]+t1;
-	buffer[21]=h[8]+1;
-	buffer[22]=h[7]+t2;
-	buffer[23]=h[0]+2;
-	buffer[24]=h[8]+t0;
-	buffer[25]=h[1]+3;
-	buffer[26]=h[0]+t1;
-	buffer[27]=h[2]+4;
-	buffer[28]=h[1]+t2;
-	buffer[29]=h[3]+5;
-	buffer[30]=h[2]+t0;
-	buffer[31] = h[4]+6;
-	buffer[32] = h[3]+t1;
-	buffer[33] = h[5]+7;
-	buffer[34] = h[4]+t2;
-	buffer[35] = h[6]+8;
-	buffer[36] = h[5]+t0;
-	buffer[37] = h[7]+9;
-	buffer[38] = h[6]+t1;
-	buffer[39] = h[8]+10;
-	buffer[40] = h[7]+t2;
-	buffer[41] = h[0]+11;
-	buffer[42] = h[8]+t0;
-	buffer[43] = h[1]+12;
-	buffer[44] = h[0]+t1;
-	buffer[45] = h[2]+13;
-	buffer[46] = h[1]+t2;
-	buffer[47] = h[3]+14;
-	buffer[48] = h[2]+t0;
-	buffer[49] = h[4]+15;
-	buffer[50] = h[3]+t1;
-	buffer[51] = h[5]+16;
-	buffer[52] = h[4]+t2;
-	buffer[53] = h[6]+17;
-	buffer[54] = h[5]+t0;
-	buffer[55] = h[7]+18;
-	buffer[56] = h[6]+t1;
+	buffer[20] = h[6] + t1;
+	buffer[21] = h[8] + 1;
+	buffer[22] = h[7] + t2;
+	buffer[23] = h[0] + 2;
+	buffer[24] = h[8] + t0;
+	buffer[25] = h[1] + 3;
+	buffer[26] = h[0] + t1;
+	buffer[27] = h[2] + 4;
+	buffer[28] = h[1] + t2;
+	buffer[29] = h[3] + 5;
+	buffer[30] = h[2] + t0;
+	buffer[31] = h[4] + 6;
+	buffer[32] = h[3] + t1;
+	buffer[33] = h[5] + 7;
+	buffer[34] = h[4] + t2;
+	buffer[35] = h[6] + 8;
+	buffer[36] = h[5] + t0;
+	buffer[37] = h[7] + 9;
+	buffer[38] = h[6] + t1;
+	buffer[39] = h[8] + 10;
+	buffer[40] = h[7] + t2;
+	buffer[41] = h[0] + 11;
+	buffer[42] = h[8] + t0;
+	buffer[43] = h[1] + 12;
+	buffer[44] = h[0] + t1;
+	buffer[45] = h[2] + 13;
+	buffer[46] = h[1] + t2;
+	buffer[47] = h[3] + 14;
+	buffer[48] = h[2] + t0;
+	buffer[49] = h[4] + 15;
+	buffer[50] = h[3] + t1;
+	buffer[51] = h[5] + 16;
+	buffer[52] = h[4] + t2;
+	buffer[53] = h[6] + 17;
+	buffer[54] = h[5] + t0;
+	buffer[55] = h[7] + 18;
+	buffer[56] = h[6] + t1;
 		
-	buffer[57] = message[ 8];
+	buffer[57] = message[8];
 
 	cudaMemcpyToSymbol(c_buffer, buffer, sizeof(buffer), 0, cudaMemcpyHostToDevice);
 
@@ -591,8 +596,9 @@ void skein512_cpu_hash_80(int thr_id, uint32_t threads, uint32_t startNounce, ui
 	uint32_t tpb = TPB52;
 	int dev_id = device_map[thr_id];
 	
-	if (device_sm[dev_id] <= 500) tpb = TPB50;
-	const dim3 grid((threads + tpb-1)/tpb);
+	if (device_sm[dev_id] <= 500) 
+		tpb = TPB50;
+	const dim3 grid((threads + tpb - 1) / tpb);
 	const dim3 block(tpb);
 
 	uint64_t *d_hash = (uint64_t*) g_hash;
@@ -600,6 +606,7 @@ void skein512_cpu_hash_80(int thr_id, uint32_t threads, uint32_t startNounce, ui
 	// hash function is cut in 2 parts to reduce kernel size
 	skein512_gpu_hash_80 <<< grid, block >>> (threads, startNounce, d_hash);
 }
+
 
 
 

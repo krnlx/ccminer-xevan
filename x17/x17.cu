@@ -293,7 +293,7 @@ extern "C" int scanhash_x17(int thr_id, struct work* work, uint32_t max_nonce, u
 	if(device_sm[dev_id]<=500) default_throughput = 1<<20;
 	else if(device_sm[dev_id]<=520) default_throughput = 1<<21;
 	else if(device_sm[dev_id]>520) default_throughput = (1<<22) + (1<<21);
-	
+	default_throughput = 1<<20;
 	if((strstr(device_name[dev_id], "1070")))default_throughput = 1<<20;
 	if((strstr(device_name[dev_id], "1080")))default_throughput = 1<<20;
 	
